@@ -12,7 +12,7 @@ import matplotlib.image as mpimg
 #We need to 1. grayscale 2. resize 3. label 4. put everything in a tensor
 train_dir = './train'
 resize = 50
-transform = transforms.Compose(
+transforms = transforms.Compose(
     [transforms.Resize(resize),
      transforms.Grayscale(),
      transforms.ToTensor(),
@@ -21,3 +21,6 @@ transform = transforms.Compose(
 img2 = mpimg.imread('cat.0.jpg')
 imgplot = plt.imshow(img2)
 plt.show()
+
+
+print(img2)

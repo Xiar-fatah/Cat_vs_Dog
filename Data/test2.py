@@ -5,8 +5,9 @@ import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
 import numpy as np
 from torchvision import datasets, models
-
-
+import torch.nn as nn
+import torch.nn.functional as F
+####################### Prepossessing Data #######################
 train_dir = './dataset'
 transforms= transforms.Compose([transforms.Resize(50),
         transforms.RandomRotation(30),
@@ -18,4 +19,18 @@ transforms= transforms.Compose([transforms.Resize(50),
 
 train_dataset = datasets.ImageFolder(train_dir, transform=transforms)
 
-print(train_dataset[20000])
+trainloader = torch.utils.data.DataLoader(train_dataset , batch_size=4,
+                                          shuffle=True, num_workers=2)
+####################### CNN #######################
+
+class CNN(nn.Module):
+    def __init__(self):
+        super(CNN, self).__init__()
+        
+
+
+    def forward(self, t):
+
+        return t
+
+

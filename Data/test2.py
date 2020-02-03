@@ -6,6 +6,8 @@ import numpy as np
 from torchvision import datasets, models
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.optim as optim
+
 ####################### Prepossessing Data #######################
 train_dir = './dataset'
 mean = [0.485, 0.456, 0.406]
@@ -21,6 +23,7 @@ transforms= transforms.Compose([
 
 train_dataset = datasets.ImageFolder(train_dir, transform=transforms)
 print(train_dataset[0][0][0])
+print(train_dataset[0][0].shape)
 print(len(train_dataset[0][0][0]))
 trainloader = torch.utils.data.DataLoader(train_dataset , batch_size=4,
                                           shuffle=True, num_workers=4)
@@ -30,23 +33,25 @@ class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv2d(in_channels = 1, out_channels = 32, kernel_size=5, stride=1, padding=0),
+            nn.Conv2d(in_channels = 3, out_channels = 32, kernel_size=5, stride=1, padding=0),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
+        
         self.layer2 = nn.Sequential(
             nn.Conv2d(in_channels = 32, out_channels =  64, kernel_size=5, stride=1, padding=0),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
         self.drop_out = nn.Dropout()
         
-        self.fc1 = nn.Linear(7 * 7 * 64, 1000)
-        self.fc2 = nn.Linear(1000, 10)
+        self.fc1 = nn.Linear(50 * 50 * 64, 1000)
+        self.fc2 = nn.Linear(1000, 1)
 
 
     def forward(self, t):
         t = self.layer1(t)
         t = self.layer2(t)
-        t = t.reshape(t.size(0), -1)
+#        t = t.reshape(t.size(0), -1)
+        t = t.view(1000, 50 * 50 * 64)
         t = self.drop_out(t)
         t = self.fc1(t)
         t = self.fc2(t)
@@ -54,12 +59,40 @@ class CNN(nn.Module):
 
 
 
+if __name__ == "__main__":
+    model = CNN()
+    learning_rate = 0.01
+    # Loss and optimizer
+    criterion = nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
-
-
-
-
-
+    # Train the model
+    total_step = len(trainloader)
+    num_epochs = 2
+    loss_list = []
+    acc_list = []
+    for epoch in range(num_epochs):
+        for i, (images, labels) in enumerate(trainloader):
+            # Run the forward pass
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+            loss_list.append(loss.item())
+    
+            # Backprop and perform Adam optimisation
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+    
+            # Track the accuracy
+            total = labels.size(0)
+            _, predicted = torch.max(outputs.data, 1)
+            correct = (predicted == labels).sum().item()
+            acc_list.append(correct / total)
+    
+            if (i + 1) % 100 == 0:
+                print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'
+                      .format(epoch + 1, num_epochs, i + 1, total_step, loss.item(),
+                              (correct / total) * 100))
 
 
 

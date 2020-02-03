@@ -10,7 +10,7 @@ import torch.optim as optim
 
 ####################### Prepossessing Data #######################
 train_dir = './dataset'
-mean = [0.485, 0.456, 0.406]
+mean = [0.485, 0.456, 0.406] 
 std  = [0.229, 0.224, 0.225]
 transforms= transforms.Compose([
         transforms.Resize((50,50)),
@@ -22,10 +22,10 @@ transforms= transforms.Compose([
         transforms.Normalize(mean, std)])
 
 train_dataset = datasets.ImageFolder(train_dir, transform=transforms)
-print(train_dataset[0][0][0])
-print(train_dataset[0][0].shape)
-print(len(train_dataset[0][0][0]))
-trainloader = torch.utils.data.DataLoader(train_dataset , batch_size=4,
+#print(train_dataset[0][0][0])
+#print(train_dataset[0][0].shape)
+#print(len(train_dataset[0][0][0]))
+trainloader = torch.utils.data.DataLoader(train_dataset , batch_size=100,
                                           shuffle=True, num_workers=4)
 ####################### CNN #######################
 
@@ -43,32 +43,45 @@ class CNN(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2))
         self.drop_out = nn.Dropout()
         
-        self.fc1 = nn.Linear(50 * 50 * 64, 1000)
-        self.fc2 = nn.Linear(1000, 1)
+        self.fc1 = nn.Linear(5184, 1000)
+        self.fc2 = nn.Linear(1000, 2)
 
 
     def forward(self, t):
+#        print("Before sending to first conv2d layer")
+#        print(t.shape)
         t = self.layer1(t)
+#        print("First conv2d layer")
+#        print(t.shape)
         t = self.layer2(t)
-#        t = t.reshape(t.size(0), -1)
-        t = t.view(1000, 50 * 50 * 64)
+#        print("Second conv2d layer")
+#        print(t.shape)
+        t = t.reshape(t.size(0), -1)
+#        print("Reshape")
+#        print(t.shape)
         t = self.drop_out(t)
+#        print("Drop_out")
+#        print(t.shape)
         t = self.fc1(t)
+#        print("fc1")
+#        print(t.shape)
         t = self.fc2(t)
+#        print("fc2")
+#        print(t.shape)
         return t
 
 
 
 if __name__ == "__main__":
     model = CNN()
-    learning_rate = 0.01
+    learning_rate = 0.001
     # Loss and optimizer
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # Train the model
     total_step = len(trainloader)
-    num_epochs = 2
+    num_epochs = 5
     loss_list = []
     acc_list = []
     for epoch in range(num_epochs):

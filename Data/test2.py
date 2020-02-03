@@ -8,25 +8,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-####################### Prepossessing Data #######################
-train_dir = './dataset'
-mean = [0.485, 0.456, 0.406] 
-std  = [0.229, 0.224, 0.225]
-transforms= transforms.Compose([
-        transforms.Resize((50,50)),
-        transforms.RandomRotation(30),
-#        transforms.RandomResizedCrop(224),
-        transforms.RandomHorizontalFlip(),
-#        transforms.Grayscale(3),
-        transforms.ToTensor(),
-        transforms.Normalize(mean, std)])
-
-train_dataset = datasets.ImageFolder(train_dir, transform=transforms)
-#print(train_dataset[0][0][0])
-#print(train_dataset[0][0].shape)
-#print(len(train_dataset[0][0][0]))
-trainloader = torch.utils.data.DataLoader(train_dataset , batch_size=100,
-                                          shuffle=True, num_workers=4)
 ####################### CNN #######################
 
 class CNN(nn.Module):
@@ -73,15 +54,39 @@ class CNN(nn.Module):
 
 
 if __name__ == "__main__":
+    ####################### Prepossessing Data #######################
+    train_dir = './dataset'
+    test_dir = './testset'
+    mean = [0.485, 0.456, 0.406] 
+    std  = [0.229, 0.224, 0.225]
+    transforms= transforms.Compose([
+            transforms.Resize((50,50)),
+            transforms.RandomRotation(30),
+    #        transforms.RandomResizedCrop(224),
+            transforms.RandomHorizontalFlip(),
+    #        transforms.Grayscale(3),
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std)])
+    
+    train_dataset = datasets.ImageFolder(train_dir, transform=transforms)
+
+    trainloader = torch.utils.data.DataLoader(train_dataset , batch_size=100,
+                                              shuffle=True, num_workers=4)
+    
+    test_dataset = datasets.ImageFolder(test_dir, transform=transforms)
+    
+    testloader = torch.utils.data.DataLoader(train_dataset , batch_size=100,
+                                              shuffle=False, num_workers=4)
+    
     model = CNN()
-    learning_rate = 0.001
+    learning_rate = 0.01
     # Loss and optimizer
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # Train the model
     total_step = len(trainloader)
-    num_epochs = 5
+    num_epochs = 2
     loss_list = []
     acc_list = []
     for epoch in range(num_epochs):
@@ -108,12 +113,19 @@ if __name__ == "__main__":
                               (correct / total) * 100))
 
 
+    model.eval()
+    with torch.no_grad():
+        correct = 0
+        total = 0
+        for images, labels in testloader:
+            outputs = model(images)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+    print('Test Accuracy of the model on the 10000 test images: {} %'.format((correct / total) * 100))
 
 
-
-
-
-
+       
 
 
 

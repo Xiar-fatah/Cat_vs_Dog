@@ -26,8 +26,8 @@ class CNN(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2))
         self.drop_out = nn.Dropout()
         
-        self.fc1 = nn.Linear(179776, 1000)
-        self.fc2 = nn.Linear(1000, 2)
+        self.fc1 = nn.Linear(238144, 64)
+        self.fc2 = nn.Linear(64, 2)
 
 
     def forward(self, t):
@@ -44,8 +44,8 @@ class CNN(nn.Module):
 #        print("Reshape")
 #        print(t.shape)
         t = self.drop_out(t)
-        print("Drop_out")
-        print(t.shape)
+#        print("Drop_out")
+#        print(t.shape)
         t = self.fc1(t)
 #        print("fc1")
 #        print(t.shape)
@@ -63,9 +63,9 @@ if __name__ == "__main__":
     mean = [0.485, 0.456, 0.406] 
     std  = [0.229, 0.224, 0.225]
     transforms= transforms.Compose([
-            transforms.Resize((256,256)),
+            transforms.Resize((50,50)),
             transforms.RandomRotation(30),
-            transforms.RandomResizedCrop(224),
+#            transforms.RandomResizedCrop(224),
             transforms.RandomHorizontalFlip(),
     #        transforms.Grayscale(3),
             transforms.ToTensor(),
@@ -73,10 +73,10 @@ if __name__ == "__main__":
     
     train_dataset = datasets.ImageFolder(train_dir, transform=transforms)
 
-    trainloader = torch.utils.data.DataLoader(train_dataset , batch_size=100,
+    trainloader = torch.utils.data.DataLoader(train_dataset , batch_size=4,
                                               shuffle=True, num_workers=4)
-    
-    test_dataset = datasets.ImageFolder(test_dir, transform=transforms)
+    print(train_dataset)
+    #    test_dataset = datasets.ImageFolder(test_dir, transform=transforms)
     
     testloader = torch.utils.data.DataLoader(train_dataset , batch_size=100,
                                               shuffle=False, num_workers=4)
@@ -129,26 +129,28 @@ if __name__ == "__main__":
     plt.ylabel("Loss")
     plt.legend(("Loss"))
     
-#    model.eval()
-#    with torch.no_grad():
-#        correct = 0
-#        total = 0
-#        for images, labels in testloader:
-#            outputs = model(images)
-#            _, predicted = torch.max(outputs.data, 1)
-#            total += labels.size(0)
-#            correct += (predicted == labels).sum().item()
-#    print('Test Accuracy of the model on the 10000 test images: {} %'.format((correct / total) * 100))
+    model.eval()
+    
+    with torch.no_grad():
+        correct = 0
+        total = 0
+        for images, labels in testloader:
+            images = images.to(device)  # missing line from original code
+            outputs = model(images)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+    print('Test Accuracy of the model on the 10000 test images: {} %'.format((correct / total) * 100))
 #
 #
 #     
-
-
-
-
-
-
-
-
-
-
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#

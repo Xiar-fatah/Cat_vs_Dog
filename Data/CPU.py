@@ -79,7 +79,6 @@ if __name__ == "__main__":
                                               shuffle=False, num_workers=4)
     
     model = CNN()
-    model.cuda()
     learning_rate = 0.01
     # Loss and optimizer
     criterion = nn.CrossEntropyLoss()

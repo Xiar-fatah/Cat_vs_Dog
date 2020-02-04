@@ -24,7 +24,7 @@ class CNN(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2))
         self.drop_out = nn.Dropout()
         
-        self.fc1 = nn.Linear(5184, 1000)
+        self.fc1 = nn.Linear(179776, 1000)
         self.fc2 = nn.Linear(1000, 2)
 
 
@@ -41,8 +41,8 @@ class CNN(nn.Module):
 #        print("Reshape")
 #        print(t.shape)
         t = self.drop_out(t)
-#        print("Drop_out")
-#        print(t.shape)
+        print("Drop_out")
+        print(t.shape)
         t = self.fc1(t)
 #        print("fc1")
 #        print(t.shape)
@@ -60,9 +60,9 @@ if __name__ == "__main__":
     mean = [0.485, 0.456, 0.406] 
     std  = [0.229, 0.224, 0.225]
     transforms= transforms.Compose([
-            transforms.Resize((50,50)),
+            transforms.Resize((256,256)),
             transforms.RandomRotation(30),
-    #        transforms.RandomResizedCrop(224),
+            transforms.RandomResizedCrop(224),
             transforms.RandomHorizontalFlip(),
     #        transforms.Grayscale(3),
             transforms.ToTensor(),
@@ -79,6 +79,7 @@ if __name__ == "__main__":
                                               shuffle=False, num_workers=4)
     
     model = CNN()
+    model.cuda()
     learning_rate = 0.01
     # Loss and optimizer
     criterion = nn.CrossEntropyLoss()
@@ -111,21 +112,32 @@ if __name__ == "__main__":
                 print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'
                       .format(epoch + 1, num_epochs, i + 1, total_step, loss.item(),
                               (correct / total) * 100))
-
-
-    model.eval()
-    with torch.no_grad():
-        correct = 0
-        total = 0
-        for images, labels in testloader:
-            outputs = model(images)
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
-    print('Test Accuracy of the model on the 10000 test images: {} %'.format((correct / total) * 100))
-
-
-       
+                
+    images = np.linspace(0,len(loss_list)-1,len(loss_list))
+    plt.figure()  
+    plt.plot(images, acc_list)
+    plt.xlabel("Epoch")
+    plt.ylabel("Accuracy")
+    plt.legend(("Accuracy"))
+    plt.figure()
+    plt.plot(images, loss_list)
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.legend(("Loss"))
+    
+#    model.eval()
+#    with torch.no_grad():
+#        correct = 0
+#        total = 0
+#        for images, labels in testloader:
+#            outputs = model(images)
+#            _, predicted = torch.max(outputs.data, 1)
+#            total += labels.size(0)
+#            correct += (predicted == labels).sum().item()
+#    print('Test Accuracy of the model on the 10000 test images: {} %'.format((correct / total) * 100))
+#
+#
+#     
 
 
 

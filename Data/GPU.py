@@ -39,13 +39,13 @@ class CNN(nn.Module):
 #        print(t.shape)
         t = self.layer2(t)
 #        print("Second conv2d layer")
-#        print(t.shape)
-        t = t.reshape(t.size(0), -1)
+        print(t.shape)
+        t = t.reshape(t.size(0), -1) # batch_Size x out_channels * 61 * 61 
 #        print("Reshape")
 #        print(t.shape)
         t = self.drop_out(t)
 #        print("Drop_out")
-#        print(t.shape)
+        print(t.shape)
         t = self.fc1(t)
 #        print("fc1")
 #        print(t.shape)
@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     # Train the model
     total_step = len(trainloader)
-    num_epochs = 5
+    num_epochs =    5
     loss_list = []
     acc_list = []
     for epoch in range(num_epochs):

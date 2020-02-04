@@ -50,8 +50,8 @@ class CNN(nn.Module):
 #        print("fc1")
 #        print(t.shape)
         t = self.fc2(t)
-#        print("fc2")
 #        print(t.shape)
+#        print(t)
         return t
 
 
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     mean = [0.485, 0.456, 0.406] 
     std  = [0.229, 0.224, 0.225]
     transforms= transforms.Compose([
-            transforms.Resize((50,50)),
+            transforms.Resize((256,256)),
             transforms.RandomRotation(30),
 #            transforms.RandomResizedCrop(224),
             transforms.RandomHorizontalFlip(),
@@ -73,9 +73,9 @@ if __name__ == "__main__":
     
     train_dataset = datasets.ImageFolder(train_dir, transform=transforms)
 
-    trainloader = torch.utils.data.DataLoader(train_dataset , batch_size=4,
+    trainloader = torch.utils.data.DataLoader(train_dataset , batch_size=8,
                                               shuffle=True, num_workers=4)
-    print(train_dataset)
+#    print(train_dataset)
     #    test_dataset = datasets.ImageFolder(test_dir, transform=transforms)
     
     testloader = torch.utils.data.DataLoader(train_dataset , batch_size=100,
@@ -83,14 +83,14 @@ if __name__ == "__main__":
     
     model = CNN()
     model.cuda(device)
-    learning_rate = 0.01
+    learning_rate = 0.0001
     # Loss and optimizer
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # Train the model
     total_step = len(trainloader)
-    num_epochs = 2
+    num_epochs = 5
     loss_list = []
     acc_list = []
     for epoch in range(num_epochs):
@@ -109,6 +109,7 @@ if __name__ == "__main__":
             # Track the accuracy
             total = labels.size(0)
             _, predicted = torch.max(outputs.data, 1)
+#            print(predicted)
             correct = (predicted == labels).sum().item()
             acc_list.append(correct / total)
     

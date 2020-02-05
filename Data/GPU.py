@@ -95,8 +95,7 @@ if __name__ == "__main__":
     acc_list = []
     for epoch in range(num_epochs):
         for i, (images, labels) in enumerate(trainloader):
-            images = images.to(device)  # missing line from original code
-            labels = labels.to(device)
+            images, labels = images.to(device), labels.to(device)
             outputs = model(images)
             loss = criterion(outputs, labels)
             loss_list.append(loss.item())
@@ -136,8 +135,7 @@ if __name__ == "__main__":
         correct = 0
         total = 0
         for images, labels in testloader:
-            images = images.to(device)  # missing line from original code
-            outputs = model(images)
+            images, outputs = images.to(device), model(images)
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()

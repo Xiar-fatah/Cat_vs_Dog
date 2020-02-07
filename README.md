@@ -20,3 +20,9 @@ The packages, software and dataset used is the following:
 5. The dataset can be downloaded [here](https://www.kaggle.com/c/dogs-vs-cats)
 
 # Method
+
+# Results
+
+# Discussion
+
+# References

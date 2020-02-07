@@ -4,13 +4,14 @@
      width="450"
      style="float: left; margin-right:  10px;" />
 # Introduction
-This is an attempt at building a convolutional neural network for image classification of cats and dogs. The dataset can be downloaded [here](https://www.kaggle.com/c/dogs-vs-cats).
+This is an attempt at building a convolutional neural network for image classification of cats and dogs. 
 # Material
-The packages and software used is the following:
+The packages, software and dataset used is the following:
 
 1. Google Colab
 2. Numpy
 3. Matplotlib
 4. PyTorch
+5. The dataset can be downloaded [here](https://www.kaggle.com/c/dogs-vs-cats)
 
 # Method
